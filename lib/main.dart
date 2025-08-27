@@ -1,16 +1,21 @@
+import 'package:anisync_flutter/pages/home/home.dart';
+import 'package:anisync_flutter/routes/app_route.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 void main() {
-  runApp(const AniSync());
+  runApp(const AniSyncApp());
 }
 
-class AniSync extends StatelessWidget {
-  const AniSync({super.key});
+class AniSyncApp extends StatelessWidget {
+  const AniSyncApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+    return GetMaterialApp(
+      getPages: AppRoute.routes,
+      title: "AniSync",
+      home: Home(),
     );
   }
 }

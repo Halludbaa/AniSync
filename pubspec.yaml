@@ -1,6 +1,6 @@
 name: anisync_flutter
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -9,6 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  dio: ^5.9.0
+  get: ^4.7.2
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.1
+  google_fonts: 5.1.0
 
 dev_dependencies:
   flutter_test:

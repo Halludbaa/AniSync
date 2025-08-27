@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "789637645577",
+    "project_id": "anisync-b79b3",
+    "storage_bucket": "anisync-b79b3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789637645577:android:858ff92191eeeb47d57fd8",
+        "android_client_info": {
+          "package_name": "com.example.anisync_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAL0ikkO9LAUlmjrXsXKndUv7szfxM1VgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
