@@ -1,61 +1,85 @@
+import 'package:anisync_flutter/controllers/anime_controller.dart';
+import 'package:anisync_flutter/models/anime_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:readmore/readmore.dart';
 
 class AnimeDetail extends StatelessWidget {
-  const AnimeDetail({super.key});
+  AnimeDetail({super.key});
+  final controller = Get.find<AnimeController>(tag: 'main');
 
   @override
   Widget build(BuildContext context) {
+    final AnimeModel anime = Get.arguments;
+
+    // if (controller.animeDetail.value?.malId != animeId) {
+    //   controller.fetchAnimeById(animeId);
+    // }
+
+    // final anime = controller.animeDetail.value;
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: _detailAnimeAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _animePoster(context),
-            SizedBox(height: 280),
-            _heading1("Takopii no Genzai"),
-            _heading1("Takopi's Original Sin", isSubtitle: true),
-            _animeShortDetail(),
-            _synopsis(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      appBar: _detailAnimeAppBar(anime: anime),
+      body: Obx(() {
+        // final anime = controller.animeDetail.value;
 
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _heading2("Information"),
-                  _heading6("Genres: "),
-                  _heading6("Themes: "),
-                  _heading6("Studios: "),
-                  _heading6("Demographics: "),
-                  _heading6("Rating: "),
-                ],
-              ),
-            ),
-          ],
-        ),
+        return controller.isDetailLoading.value
+            ? loading()
+            : main(context, anime);
+      }),
+    );
+  }
+
+  SingleChildScrollView main(BuildContext context, AnimeModel? anime) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _animePoster(context, image: anime?.images.normal ?? ""),
+          SizedBox(height: 280),
+          _heading1("${anime?.title}"),
+          _heading1("${anime?.titleEnglish}", isSubtitle: true),
+          _animeShortDetail(anime),
+          _synopsis(anime?.synopsis),
+          _informations(anime),
+        ],
+      ),
+    );
+  }
+
+  Container _informations(AnimeModel? anime) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _heading2("Information"),
+          _heading6("Studios: ${anime?.studios} "),
+          _heading6("Genres: ${anime?.genres} "),
+          _heading6("Themes: ${anime?.themes}"),
+          _heading6("Demographics: ${anime?.demographics} "),
+          _heading6("Status: ${anime?.status}"),
+          _heading6("Rating: ${anime?.rating}"),
+        ],
       ),
     );
   }
 
   Text _heading6(String text) => Text(text, style: TextStyle(fontSize: 18));
 
-  Container _synopsis() {
+  Center loading() {
+    return Center(child: CircularProgressIndicator());
+  }
+
+  Container _synopsis(String? synopsis) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       width: double.infinity,
       child: Column(
         spacing: 10,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _heading2("Synopsis"),
-          _paragraph(
-            "A squid-like creature, known as a Happian, leaves his home planet with  the desire to spread happiness across the universe. He lands on Earth,  but quickly finds himself in danger of captivity by its inhabitants.  Fortunately, he is found by an unsmiling little girl named Shizuka Kuze, who feeds him and names him Takopii. Feeling indebted, Takopii decides  to do everything in his power to bring a smile to her face. ",
-          ),
-        ],
+        children: [_heading2("Synopsis"), _paragraph(synopsis ?? "")],
       ),
     );
   }
@@ -82,25 +106,32 @@ class AnimeDetail extends StatelessWidget {
     );
   }
 
-  Container _animeShortDetail() {
+  Container _animeShortDetail(AnimeModel? anime) {
     return Container(
       color: Colors.grey[100],
       margin: EdgeInsets.only(top: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _animeScore(),
-          _heading5("Finished Airing, ONA 2025"),
-          _heading5("6 eps"),
+          _animeScore("${anime?.score}"),
+          _heading5("${anime?.status}, ${anime?.type} ${anime?.airedYear}"),
+          _heading5(
+            anime?.episode != "unknown"
+                ? "${anime?.episode} eps"
+                : "eps: ${anime?.episode}",
+          ),
         ],
       ),
     );
   }
 
-  Row _animeScore() {
+  Row _animeScore(String? score) {
     return Row(
       spacing: 5,
-      children: [Icon(Icons.star_border, size: 30), _heading5("8.88")],
+      children: [
+        Icon(Icons.star_border, size: 30),
+        _heading5(score ?? "unknown"),
+      ],
     );
   }
 
@@ -109,6 +140,7 @@ class AnimeDetail extends StatelessWidget {
   Text _heading1(String text, {bool isSubtitle = false}) {
     return Text(
       text,
+      textAlign: TextAlign.center,
       style: TextStyle(
         color: Colors.black,
         fontWeight: !isSubtitle ? FontWeight.w900 : FontWeight.w300,
@@ -128,7 +160,7 @@ class AnimeDetail extends StatelessWidget {
     );
   }
 
-  Stack _animePoster(BuildContext context) {
+  Stack _animePoster(BuildContext context, {required String image}) {
     return Stack(
       clipBehavior: Clip.none,
       alignment: Alignment.center,
@@ -149,9 +181,7 @@ class AnimeDetail extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image: NetworkImage(
-                  "https://cdn.myanimelist.net/images/anime/1182/149879.jpg",
-                ),
+                image: NetworkImage(image),
                 fit: BoxFit.fill,
               ),
             ),
@@ -161,7 +191,7 @@ class AnimeDetail extends StatelessWidget {
     );
   }
 
-  AppBar _detailAnimeAppBar() {
+  AppBar _detailAnimeAppBar({required AnimeModel anime}) {
     return AppBar(
       centerTitle: true,
       leading: IconButton(
@@ -176,7 +206,21 @@ class AnimeDetail extends StatelessWidget {
       ),
       actionsPadding: EdgeInsets.only(right: 10),
       actions: [
-        Icon(Icons.favorite_border, color: Colors.white, size: 25),
+        Obx(() {
+          final bool isFav = controller.isFavorite(anime);
+
+          return IconButton(
+            icon: Icon(
+              isFav ? Icons.favorite : Icons.favorite_border,
+              color: Colors.white,
+              size: 25,
+            ),
+            tooltip: isFav ? "Remove from Favorites" : "Add to Favorites",
+            onPressed: () {
+              controller.favoriteToggle(anime);
+            },
+          );
+        }),
         SizedBox(width: 10),
         Icon(Icons.share_outlined, color: Colors.white, size: 25),
       ],

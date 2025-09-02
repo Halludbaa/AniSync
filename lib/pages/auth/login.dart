@@ -1,3 +1,4 @@
+import 'package:anisync_flutter/controllers/auth_controller.dart';
 import 'package:anisync_flutter/routes/app_route_named.dart';
 import 'package:anisync_flutter/widgets/big_logo_text.dart';
 import 'package:anisync_flutter/widgets/borderless_button.dart';
@@ -9,9 +10,17 @@ import 'package:get/get.dart';
 
 class Login extends StatelessWidget {
   Login({super.key});
+  final AuthController controller = Get.find<AuthController>(tag: "auth");
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  void trySignIn() {
+    controller.signIn(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +40,7 @@ class Login extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BorderlessButton(text: "Sign In", onPressed: () {}),
+                BorderlessButton(text: "Sign In", onPressed: trySignIn),
                 Text("Forgot Password?"),
               ],
             ),

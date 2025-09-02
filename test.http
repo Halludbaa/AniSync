@@ -1,0 +1,15 @@
+@baseUrl = https://api.jikan.moe/v4
+@animeId = 53065
+
+### Get Season Anime
+GET  {{baseUrl}}/seasons/now
+
+### Get Upcoming Anime
+GET  {{baseUrl}}/seasons/upcoming
+
+### Get Season Anime
+GET  {{baseUrl}}/top/anime?filter=airing&sfw=true&page=1&limit=10
+
+
+### Get Upcoming Anime
+GET {{baseUrl}}/anime/{{animeId}}

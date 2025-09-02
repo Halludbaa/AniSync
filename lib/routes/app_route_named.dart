@@ -1,4 +1,5 @@
 class AppRouteNamed {
+  static const splash = '/splash';
   static const getStarted = '/starter';
   static const animeDetail = '/anime/detail';
   static const profile = '/profile';

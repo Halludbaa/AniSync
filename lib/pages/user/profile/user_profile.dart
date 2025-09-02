@@ -1,3 +1,6 @@
+import 'package:anisync_flutter/controllers/anime_controller.dart';
+import 'package:anisync_flutter/controllers/auth_controller.dart';
+import 'package:anisync_flutter/models/anime_model.dart';
 import 'package:anisync_flutter/pages/home/home.dart';
 import 'package:anisync_flutter/routes/app_route_named.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +8,11 @@ import 'package:get/get.dart';
 import 'package:readmore/readmore.dart';
 
 class UserProfile extends StatelessWidget {
-  const UserProfile({super.key});
+  UserProfile({super.key});
+  final AuthController controller = Get.find<AuthController>(tag: 'auth');
+  final AnimeController animeController = Get.find<AnimeController>(
+    tag: 'main',
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +27,9 @@ class UserProfile extends StatelessWidget {
             children: [
               _userPhoto(),
               SizedBox(height: 20),
-              _heading1("Halludba"),
-              _paragraph("Coffee addict, Tech Enthusiast and Otaku?"),
-              _favorites(),
+              _heading1("${controller.currentUser.value?.fullname}"),
+              _paragraph("${controller.currentUser.value?.bio}"),
+              _favorites(controller.currentUser.value?.favorites ?? []),
             ],
           ),
         ),
@@ -30,14 +37,14 @@ class UserProfile extends StatelessWidget {
     );
   }
 
-  Container _favorites() {
+  Container _favorites(List<AnimeModel> animes) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       width: double.infinity,
       child: Column(
         spacing: 10,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [_heading2("Favorites")],
+        children: [_heading2("Favorites"), animeCardHorizontal(animes)],
       ),
     );
   }
@@ -99,7 +106,36 @@ class UserProfile extends StatelessWidget {
 
   AppBar _profileAppBar(BuildContext context) {
     return AppBar(
-      actions: [Icon(Icons.more_vert, color: Colors.white, size: 30)],
+      actions: [
+        PopupMenuButton(
+          icon: Icon(Icons.more_vert, color: Colors.white, size: 30),
+          onSelected: (value) {
+            switch (value) {
+              case 'edit':
+                print("edit");
+              case 'logout':
+                controller.logout();
+            }
+          },
+          itemBuilder:
+              (context) => [
+                PopupMenuItem(
+                  value: 'edit',
+                  child: ListTile(
+                    leading: Icon(Icons.edit),
+                    title: Text("Edit Profile"),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'logout',
+                  child: ListTile(
+                    leading: Icon(Icons.logout),
+                    title: Text("Logout"),
+                  ),
+                ),
+              ],
+        ),
+      ],
       centerTitle: true,
       leading: IconButton(
         onPressed: () {

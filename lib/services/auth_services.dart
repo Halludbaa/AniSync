@@ -1,27 +1,19 @@
-import 'package:anisync_flutter/routes/app_route_named.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
 class AuthServices {
-  Future<void> signup({
+  Future<User?> signup({
     required String email,
     required String password,
-    required BuildContext context,
   }) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      print("test: $email $password");
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
 
-      await Future.delayed(const Duration(seconds: 1));
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
-      // );
+      User? user = credential.user!;
 
-      Get.offAllNamed(AppRouteNamed.home);
+      return user;
     } on FirebaseAuthException catch (e) {
       String message = '';
 
@@ -31,26 +23,25 @@ class AuthServices {
         case 'email-already-in-use':
           message = "An account already exists with that email.";
       }
+      print(e);
+      Get.snackbar("Error", message);
+      return null;
     }
   }
 
-  Future<void> signin({
+  Future<User?> signin({
     required String email,
     required String password,
-    required BuildContext context,
   }) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      await Future.delayed(const Duration(seconds: 1));
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
-      // );
-      Get.offAllNamed(AppRouteNamed.home);
+      User? user = credential.user;
+
+      return user;
     } on FirebaseAuthException catch (e) {
       String message = '';
 
@@ -60,12 +51,13 @@ class AuthServices {
         case 'invalid-credential':
           message = 'Wrong password provided for that user.';
       }
+      Get.snackbar("Error", message);
     }
   }
 
-  Future<void> signout({required BuildContext context}) async {
+  Future<void> signout() async {
     await FirebaseAuth.instance.signOut();
+
     await Future.delayed(const Duration(seconds: 1));
-    Get.offAllNamed(AppRouteNamed.login);
   }
 }
